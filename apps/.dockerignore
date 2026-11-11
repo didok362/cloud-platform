@@ -1,0 +1,7 @@
+.git
+*.sh
+proto/
+.env
+.env.*
+*.md
+*_test.go

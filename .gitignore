@@ -1,0 +1,11 @@
+.env
+.env.*
+*.retry
+*.exe
+
+# Terraform state & provider binaries (добавятся в Фазе 3)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example

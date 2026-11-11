@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package chat.v1;
+
+option go_package = "github.com/didok362/cloud-platform/gen/chat/v1;chatv1";
+
+service ChatService {
+  rpc SendMessage (SendMessageRequest) returns (SendMessageResponse);
+}
+
+message SendMessageRequest {
+  string sender = 1;
+  string text = 2;
+}
+
+message SendMessageResponse {
+  string id = 1;
+  string status = 2;
+}

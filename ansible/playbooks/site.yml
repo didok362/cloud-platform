@@ -1,0 +1,54 @@
+- name: Base setup on Azure VPS
+  hosts: vps
+  become: true
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+    - name: Install ufw and fail2ban
+      ansible.builtin.apt:
+        name:
+          - ufw
+          - fail2ban
+        state: present
+    - name: Allow SSH, HTTP and HTTPS
+      community.general.ufw:
+        rule: allow
+        proto: tcp
+        port: '{{ item }}'
+      loop:
+        - '22'
+        - '80'
+        - '443'
+    - name: General UFW
+      community.general.ufw:
+        default: deny
+        direction: incoming
+
+    - name: Enable of UFW
+      community.general.ufw:
+        state: enabled
+    
+    - name: Harden SSH config
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/00-hardening.conf
+        mode: '0644'
+        content: |
+          PasswordAuthentication no
+          PermitRootLogin no
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication yes
+        validate: '/usr/sbin/sshd -t -f %s'
+      notify: Reload ssh
+    
+    - name: fail2ban 
+      ansible.builtin.service:
+        name: fail2ban
+        state: started
+        enabled: true
+  handlers:
+    - name: Reload ssh
+      ansible.builtin.service:
+        name: ssh
+        state: reloaded

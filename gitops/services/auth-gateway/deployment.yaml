@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: auth-gateway
-          image: ghcr.io/didok362/auth-gateway:latest
+          image: ghcr.io/didok362/cloud-platform/auth-gateway:sha-e55bc47
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

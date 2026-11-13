@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-engine
+  labels:
+    app: chat-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-engine
+  template:
+    metadata:
+      labels:
+        app: chat-engine
+    spec:
+      containers:
+        - name: chat-engine
+          image: ghcr.io/didok362/cloud-platform/chat-engine:sha-e55bc47
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50051
+              name: grpc
+            - containerPort: 8081
+              name: http
+          env:
+            - name: GRPC_PORT
+              value: "50051"
+            - name: HTTP_PORT
+              value: "8081"
+            - name: NATS_URL
+              value: "nats://nats:4222"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 5
